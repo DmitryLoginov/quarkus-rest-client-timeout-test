@@ -42,27 +42,27 @@
 - Consumes: no application interfaces; the dynamic WireMock URL is returned as `quarkus.rest-client.delayed-service.url`.
 - Produces: `DelayedServiceClient#get()` returning `String`, registered with config key `delayed-service`; shared timeout configuration used by Task 2.
 
-- [ ] **Step 1: Write the failing read-timeout integration test and WireMock resource**
+- [x] **Step 1: Write the failing read-timeout integration test and WireMock resource**
 
 Create `ReadTimeoutTest#throwsProcessingExceptionWithVertxTimeoutCause()` to inject `@RestClient DelayedServiceClient`, invoke `get()`, print the caught exception with `printStackTrace(System.out)`, and assert `ProcessingException`, a nested `NoStackTraceTimeoutException`, timeout text, WireMock request receipt, and completion under five seconds. Configure the resource to delay `GET /delayed` for 1,000 ms.
 
-- [ ] **Step 2: Run the focused test to verify RED**
+- [x] **Step 2: Run the focused test to verify RED**
 
 Run: `mvn -Dtest=ReadTimeoutTest test`
 
 Expected: compilation/test failure because the Quarkus build and `DelayedServiceClient` are not implemented yet.
 
-- [ ] **Step 3: Add the minimal Quarkus build, REST client, and timeout configuration**
+- [x] **Step 3: Add the minimal Quarkus build, REST client, and timeout configuration**
 
-Import `io.quarkus.platform:quarkus-bom:3.40.1.1`, add `quarkus-rest-client`, `quarkus-junit5`, and test-scoped `org.wiremock:wiremock-standalone:3.13.2`, plus the Quarkus Maven plugin. Define `DelayedServiceClient` as `@Path("/delayed")`, `@RegisterRestClient(configKey = "delayed-service")`, with `@GET String get()`. Set the client-specific connect and read timeouts to 250 ms and provide a harmless default URL in `application.properties`.
+Import `io.quarkus.platform:quarkus-bom:3.40.1.1`, add `quarkus-rest-client`, `quarkus-junit`, and test-scoped `org.wiremock:wiremock-standalone:3.13.2`, plus the Quarkus Maven plugin. Define `DelayedServiceClient` as `@Path("/delayed")`, `@RegisterRestClient(configKey = "delayed-service")`, with `@GET String get()`. Set the client-specific connect and read timeouts to 250 ms and provide a harmless default URL in `application.properties`.
 
-- [ ] **Step 4: Run the focused test to verify GREEN**
+- [x] **Step 4: Run the focused test to verify GREEN**
 
 Run: `mvn -Dtest=ReadTimeoutTest test`
 
 Expected: one passing test; output includes `jakarta.ws.rs.ProcessingException` and the concrete Vert.x timeout cause.
 
-- [ ] **Step 5: Commit Task 1**
+- [x] **Step 5: Commit Task 1**
 
 ```powershell
 git add -- pom.xml src/main src/test/java/dev/ldv/timeout/DelayedServiceWireMockResource.java src/test/java/dev/ldv/timeout/ReadTimeoutTest.java
@@ -79,27 +79,27 @@ git commit -m "test: demonstrate REST client read timeout"
 - Consumes: `DelayedServiceClient#get()` and config key `delayed-service` from Task 1.
 - Produces: `ConnectTimeoutProfile`, which reads system property `timeout.blackhole.host` (default `192.0.2.1`) and overrides the client URL and timeout values.
 
-- [ ] **Step 1: Write the failing connect-timeout integration test**
+- [x] **Step 1: Write the failing connect-timeout integration test**
 
-Create `ConnectTimeoutTest#throwsProcessingExceptionWithVertxConnectTimeoutCause()` under `@TestProfile(ConnectTimeoutProfile.class)`. Invoke the client, print the full exception, assert outer `ProcessingException`, a nested Vert.x timeout exception and connection-specific timeout text, and complete under five seconds. If the network immediately refuses/rejects the address, fail with a message telling the user to rerun with `-Dtimeout.blackhole.host=<dropping-address>` and include the observed chain. Leave `ConnectTimeoutProfile` absent for the RED run.
+Create `ConnectTimeoutTest#throwsProcessingExceptionWithNettyConnectTimeoutCause()` under `@TestProfile(ConnectTimeoutProfile.class)`. Invoke the client, print the full exception, assert outer `ProcessingException`, a nested Netty `ConnectTimeoutException` and connection-specific timeout text, and complete under five seconds. If the network immediately refuses/rejects the address, fail with a message telling the user to rerun with `-Dtimeout.blackhole.host=<dropping-address>` and include the observed chain. Leave `ConnectTimeoutProfile` absent for the RED run.
 
-- [ ] **Step 2: Run the focused test to verify RED**
+- [x] **Step 2: Run the focused test to verify RED**
 
 Run: `mvn -Dtest=ConnectTimeoutTest test`
 
 Expected: failure until the profile supplies the black-hole URL and exact observed timeout assertions are aligned with Quarkus 3.40.1.1.
 
-- [ ] **Step 3: Implement the minimal profile and align assertions to the observed native exception**
+- [x] **Step 3: Implement the minimal profile and align assertions to the observed native exception**
 
 Implement `QuarkusTestProfile#getConfigOverrides()` with `http://<host>:81`, `connect-timeout=250`, and `read-timeout=5000`. Preserve the native exception unchanged; only test assertions and diagnostics inspect it.
 
-- [ ] **Step 4: Run the focused test to verify GREEN**
+- [x] **Step 4: Run the focused test to verify GREEN**
 
 Run: `mvn -Dtest=ConnectTimeoutTest test`
 
-Expected on a dropping route: one passing test; output includes `jakarta.ws.rs.ProcessingException` and the concrete Vert.x connection-timeout cause. On an intercepting/rejecting route: the intentional actionable assertion failure names the override property.
+Expected on a dropping route: one passing test; output includes `jakarta.ws.rs.ProcessingException` and the concrete Netty `ConnectTimeoutException` cause. On an intercepting/rejecting route: the intentional actionable assertion failure names the override property.
 
-- [ ] **Step 5: Commit Task 2**
+- [x] **Step 5: Commit Task 2**
 
 ```powershell
 git add -- src/test/java/dev/ldv/timeout/ConnectTimeoutProfile.java src/test/java/dev/ldv/timeout/ConnectTimeoutTest.java
@@ -116,23 +116,23 @@ git commit -m "test: demonstrate REST client connect timeout"
 - Consumes: exact exception class names and messages observed in Tasks 1 and 2.
 - Produces: commands and explanation sufficient to reproduce and interpret both timeout cases.
 
-- [ ] **Step 1: Write README usage and expected-output documentation**
+- [x] **Step 1: Write README usage and expected-output documentation**
 
 Document `mvn test`, focused test commands, the `timeout.blackhole.host` override, the exact observed outer/cause classes, the distinction between read and connect timeout, and why WireMock cannot emulate the latter. Link the relevant official Quarkus REST Client guide.
 
-- [ ] **Step 2: Run the complete test suite**
+- [x] **Step 2: Run the complete test suite**
 
 Run: `mvn test`
 
 Expected: all tests pass on a dropping route; otherwise only the connect test fails with the documented actionable network diagnostic.
 
-- [ ] **Step 3: Inspect the final diff and requirements**
+- [x] **Step 3: Inspect the final diff and requirements**
 
 Run: `git diff --check` and `git status --short`
 
 Expected: no whitespace errors; only intended application, tests, documentation, and Maven build changes remain.
 
-- [ ] **Step 4: Commit documentation and plan completion**
+- [x] **Step 4: Commit documentation and plan completion**
 
 ```powershell
 git add -- README.md docs/superpowers
