@@ -30,7 +30,7 @@ class ReadTimeoutTest {
         System.out.println("=== READ TIMEOUT EXCEPTION CHAIN ===");
         thrown.printStackTrace(System.out);
 
-        assertTrue(ExceptionChain.hasCauseNamed(thrown, "NoStackTraceTimeoutException"),
+        assertTrue(ExceptionChain.hasCauseOfType(thrown, "io.vertx.core.impl.NoStackTraceTimeoutException"),
                 () -> "Expected a Vert.x timeout cause, got:\n" + ExceptionChain.describe(thrown));
         assertTrue(ExceptionChain.describe(thrown).toLowerCase(Locale.ROOT).contains("timeout"),
                 () -> "Expected timeout text, got:\n" + ExceptionChain.describe(thrown));

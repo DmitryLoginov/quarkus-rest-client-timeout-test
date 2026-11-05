@@ -16,6 +16,6 @@ public final class ConnectTimeoutProfile implements QuarkusTestProfile {
         return Map.of(
                 "quarkus.rest-client.delayed-service.url", "http://" + host + ":81",
                 "quarkus.rest-client.delayed-service.connect-timeout", "250",
-                "quarkus.rest-client.delayed-service.read-timeout", "5000");
+                "quarkus.rest-client.delayed-service.read-timeout", "1500");
     }
 }

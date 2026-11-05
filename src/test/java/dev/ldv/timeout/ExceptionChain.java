@@ -5,10 +5,10 @@ final class ExceptionChain {
     private ExceptionChain() {
     }
 
-    static boolean hasCauseNamed(Throwable throwable, String simpleName) {
+    static boolean hasCauseOfType(Throwable throwable, String className) {
         return throwable != null
-                && (throwable.getClass().getSimpleName().equals(simpleName)
-                        || hasCauseNamed(throwable.getCause(), simpleName));
+                && (throwable.getClass().getName().equals(className)
+                        || hasCauseOfType(throwable.getCause(), className));
     }
 
     static String describe(Throwable throwable) {

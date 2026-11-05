@@ -91,7 +91,7 @@ Expected: failure until the profile supplies the black-hole URL and exact observ
 
 - [x] **Step 3: Implement the minimal profile and align assertions to the observed native exception**
 
-Implement `QuarkusTestProfile#getConfigOverrides()` with `http://<host>:81`, `connect-timeout=250`, and `read-timeout=5000`. Preserve the native exception unchanged; only test assertions and diagnostics inspect it.
+Implement `QuarkusTestProfile#getConfigOverrides()` with `http://<host>:81`, `connect-timeout=250`, and a 1,500 ms read timeout that stays comfortably below the five-second JUnit bound. Preserve the native exception unchanged; only test assertions and diagnostics inspect it.
 
 - [x] **Step 4: Run the focused test to verify GREEN**
 
