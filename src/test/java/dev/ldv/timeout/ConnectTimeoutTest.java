@@ -29,29 +29,12 @@ class ConnectTimeoutTest {
         System.out.println("=== CONNECT TIMEOUT EXCEPTION CHAIN ===");
         thrown.printStackTrace(System.out);
 
-        if (!hasCauseNamed(thrown, "ConnectTimeoutException")) {
+        if (!ExceptionChain.hasCauseNamed(thrown, "ConnectTimeoutException")) {
             fail("The network rejected the target immediately instead of dropping the TCP connection. "
                     + "Rerun with -Dtimeout.blackhole.host=<dropping-address>. Observed:\n"
-                    + exceptionChain(thrown));
+                    + ExceptionChain.describe(thrown));
         }
-        assertTrue(exceptionChain(thrown).contains("connection timed out after 250 ms"),
-                () -> "Expected the configured 250 ms connect timeout, got:\n" + exceptionChain(thrown));
-    }
-
-    private static boolean hasCauseNamed(Throwable throwable, String simpleName) {
-        return throwable != null
-                && (throwable.getClass().getSimpleName().equals(simpleName)
-                        || hasCauseNamed(throwable.getCause(), simpleName));
-    }
-
-    private static String exceptionChain(Throwable throwable) {
-        StringBuilder result = new StringBuilder();
-        for (Throwable current = throwable; current != null; current = current.getCause()) {
-            if (!result.isEmpty()) {
-                result.append(System.lineSeparator()).append("caused by: ");
-            }
-            result.append(current.getClass().getName()).append(": ").append(current.getMessage());
-        }
-        return result.toString();
+        assertTrue(ExceptionChain.describe(thrown).contains("connection timed out after 250 ms"),
+                () -> "Expected the configured 250 ms connect timeout, got:\n" + ExceptionChain.describe(thrown));
     }
 }
